@@ -1,5 +1,4 @@
-import { min } from 'date-fns';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useForm } from "react-hook-form";
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthProvider';
@@ -7,18 +6,31 @@ import { AuthContext } from '../../contexts/AuthProvider';
 const Login = () => {
 
     const { register, formState: { errors }, handleSubmit } = useForm();
-
     const { signIn } = useContext(AuthContext)
+    const [loginError, setLoginError] = useState('');
 
     const handleLogin = data => {
         console.log(data);
+        setLoginError('');
         signIn(data.email, data.password)
+            .then(result => {
+                const user = result.user;
+                console.log(user);
+            })
+            .catch(e => {
+                console.error(e.message)
+                setLoginError(e.message)
+            });
     }
 
     return (
         <div className='h-[800px] flex flex-col justify-center items-center '>
             <div className='w-96 p-7 shadow-xl rounded-xl'>
                 <h2 className='text-xl text-center font-bold mb-10'>Login</h2>
+
+                <div>
+                    {loginError && <p className='text-red-600'>{loginError}</p>}
+                </div>
 
                 <form onSubmit={handleSubmit(handleLogin)}>
 
